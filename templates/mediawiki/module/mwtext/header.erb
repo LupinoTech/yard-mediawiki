@@ -1,0 +1,6 @@
+<% if ( (object.has_tag?(:api) && object.tag(:api).text == 'private') || object.has_tag?(:abstract) || object.has_tag?(:deprecated) ) %>
+{{api_class_attr
+<% if object.has_tag?(:api) && object.tag(:api).text == 'private' %>|private<% end %>
+<% if object.has_tag?(:abstract) %>|abstract<% end %>
+<% if object.has_tag?(:deprecated) %>|deprecated<% end %>
+}}<% end %>

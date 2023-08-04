@@ -1,0 +1,6 @@
+<div id="content">
+  = <%= defined?(@title) ? @title : '' %> =
+  <%= yieldall %>
+</div>
+
+<%= erb(:footer) %>
