@@ -10,10 +10,10 @@ module YardMediawiki
 
       opts.on('--mw-namespace [NS]',
               'Namespace for links '\
-              "#{YardMediawiki::Mediawiki_API.default_ns.inspect}"
+              "#{YardMediawiki::YardMediawikiAPI.default_ns.inspect}"
              ) do |ns|
-        YardMediawiki::Mediawiki_API.default_ns = ns
-        pp "set namespace to #{YardMediawiki::Mediawiki_API.default_ns}"
+        YardMediawiki::YardMediawikiAPI.default_ns = ns
+        pp "set namespace to #{YardMediawiki::YardMediawikiAPI.default_ns}"
       end
 
       opts.separator ''

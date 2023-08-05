@@ -1,5 +1,5 @@
 module YardMediawiki
-  class Mediawiki_API
+  class YardMediawikiAPI
     @default_ns = ""
 
     def self.default_ns

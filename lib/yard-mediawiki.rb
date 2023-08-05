@@ -1,6 +1,6 @@
 require 'yard'
 require_relative "yard-mediawiki/command_line_options"
-require_relative "yard-mediawiki/mediawiki_api"
+require_relative "yard-mediawiki/yard_mediawiki_api"
 
 YARD::CLI::YardoptsCommand.prepend YardMediawiki::CommandLineOptions
 
