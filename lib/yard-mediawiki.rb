@@ -1,11 +1,17 @@
 require 'yard'
+require_relative "yard-mediawiki/command_line_options"
+require_relative "yard-mediawiki/mediawiki_api"
 
-# Own class to provide the template to yardoc
+YARD::CLI::YardoptsCommand.prepend YardMediawiki::CommandLineOptions
+
+#Own class to provide the template to yardoc
+
 module YardMediawiki
 
   # ctor
   def self.init
     YARD::Templates::Engine.register_template_path self.templates_path
+
     ## in case we need additonal markup:
     #
     # tags = [
@@ -16,7 +22,7 @@ module YardMediawiki
 
   # @return [String] the path to the tempaltes folder
   def self.templates_path
-    File.join(__dir__, 'templates')
+    File.join(__dir__, "..", "templates")
   end
 end
 
