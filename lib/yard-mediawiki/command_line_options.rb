@@ -10,10 +10,13 @@ module YardMediawiki
 
       opts.on('--mw-namespace [NS]',
               'Namespace for links '\
-              "#{YardMediawiki::YardMediawikiAPI.default_ns.inspect}"
+              "(Default: \"#{YardMediawiki::YardMediawikiAPI.default_ns}\")"
              ) do |ns|
         YardMediawiki::YardMediawikiAPI.default_ns = ns
-        pp "set namespace to #{YardMediawiki::YardMediawikiAPI.default_ns}"
+      end
+
+      opts.on("--[no-]mw-semantic", TrueClass, "use Semantic Properties " "(Default: #{YardMediawiki::YardMediawikiAPI.use_smw.inspect})") do |semantic|
+        YardMediawiki::YardMediawikiAPI.use_smw = semantic
       end
 
       opts.separator ''
