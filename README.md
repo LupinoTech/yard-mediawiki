@@ -20,11 +20,22 @@ As of now, the template still prints mostly HTML.
 
 Download and store the template files somewhere on your system.
 
-Run `yardoc` with the repo's "yard-mediawiki.rb" as plugin (`-e`),
-"mediawiki" as template name (`-t`) and "mwtext" (`-f`) as output format:
-
+Add
 ```
-yardoc <more_yard_options> -e <path_to>/yard-mediawiki/yard-mediawiki.rb -t mediawiki -f mwtext -o <path_to_output> <additional_options> <path_to_input>
+gem 'yard-mediawiki', path: "<path_to>/yard-mediawiki/"
+```
+to the `Gemfile` of your project, and then run
+```
+bundle update yard-mediawiki
+```
+Then you can generate the documentation of your code with Mediawiki markup by using
+```
+bundle exec yard doc
+```
+with the repo's "yard-mediawiki.rb" as plugin (`--plugin`),
+"mediawiki" as template name (`-t`) and "mwtext" (`-f`) as output format, e.g.:
+```
+bundle exec yard doc --plugin <path_to>/yard-mediawiki/yard-mediawiki.rb -t mediawiki -f mwtext -o <path_to_output> <additional_options> <path_to_input>
 ```
 
 ### Additional Options
