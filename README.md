@@ -24,10 +24,7 @@ Add
 ```
 gem 'yard-mediawiki', path: "<path_to>/yard-mediawiki/"
 ```
-to the `Gemfile` of your project, and then run
-```
-bundle update yard-mediawiki
-```
+to the `Gemfile` of your project, and then run `bundle update yard-mediawiki`
 Then you can generate the documentation of your code with Mediawiki markup by using
 ```
 bundle exec yard doc
