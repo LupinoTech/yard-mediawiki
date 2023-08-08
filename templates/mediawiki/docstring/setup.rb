@@ -5,7 +5,6 @@ def init
   sections :index, [:private, :deprecated, :abstract, :todo, :note, :returns_void, :text], T('tags')
 end
 
-
 def private
   return unless object.has_tag?(:api) && object.tag(:api).text == 'private'
   erb(:private)

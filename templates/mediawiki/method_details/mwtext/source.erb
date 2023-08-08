@@ -1,10 +1,3 @@
-<table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines"><%= "\n\n\n" %><%= h format_lines(object) %></pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File '<%= h object.file %>'<% if object.line %>, line <%= object.line %><% end %></span><%= "\n\n" %><%= html_syntax_highlight object.source %></pre>
-    </td>
-  </tr>
-</table>
+<syntax_highlight lang="ruby" <% if object.line %> line start="<%= object.line %>"<% end %>>
+<%= object.source %>
+</syntax_highlight>

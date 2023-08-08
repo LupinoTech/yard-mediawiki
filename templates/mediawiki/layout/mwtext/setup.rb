@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 include Helpers::HtmlHelper
 
-
 def init
   @breadcrumb = []
   @page_title = ''
@@ -71,24 +70,10 @@ def diskfile
   "<div id='filecontents'>" + data + "</div>"
 end
 
-# @return [Array<String>] core javascript files for layout
-# @since 0.7.0
-def javascripts
-  # %w(js/jquery.js js/app.js)
-  return []
-end
-
-# @return [Array<String>] core stylesheets for the layout
-# @since 0.7.0
-def stylesheets
-  # %w(css/style.css css/common.css)
-  return []
-end
-
 # @return [Array<Hash{Symbol=>String}>] the list of search links and drop-down menus
 # @since 0.7.0
 def menu_lists
-  [{:type => 'class', :title => 'Classes', :search_title => 'Class List'},
+  [{:type => 'class',  :title => 'Classes', :search_title => 'Class List'},
    {:type => 'method', :title => 'Methods', :search_title => 'Method List'},
-   {:type  => 'file', :title => 'Files', :search_title => 'File List'}]
+   {:type => 'file',   :title => 'Files',   :search_title => 'File List'}]
 end

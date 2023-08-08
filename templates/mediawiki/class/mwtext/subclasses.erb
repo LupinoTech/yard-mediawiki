@@ -1,5 +1,4 @@
-<div id="subclasses">
-  === Direct Known Subclasses ===
+=== Direct Known Subclasses ===
 
-  <p class="children"><%= @subclasses.map {|name, child| linkify(child, name) }.join(", ") %></p>
-</div>
+<%= @subclasses.map {|name, child| linkify(child, name) }.join(", ") %>
+
