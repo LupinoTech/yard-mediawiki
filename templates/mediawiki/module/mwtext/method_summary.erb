@@ -1,14 +1,6 @@
-<% if method_listing.size > 0 %>
-  <% groups(method_listing) do |list, name| %>
-    <h2>
-      <%= name %>
-      <small><a href="#" class="summary_toggle">collapse</a></small>
-    </h2>
+<% if method_listing.size > 0
+  groups(method_listing) do |list, name| %>=== <%= name %> ===
 
-    <ul class="summary">
-      <% list.each do |meth| %>
-        <%= yieldall :item => meth %>
-      <% end %>
-    </ul>
-  <% end %>
-<% end %>
+<% list.each do |meth| %><%= yieldall :item => meth %><% end
+  end
+end %>

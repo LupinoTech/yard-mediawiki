@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 include Helpers::HtmlHelper
 include Helpers::ModuleHelper
+include Helpers::MWHelper
 
 def init
   sections :header, :box_info, :pre_docstring, T('docstring'), :children,

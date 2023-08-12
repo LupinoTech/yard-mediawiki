@@ -1,8 +1,4 @@
-<% groups(attr_listing, "Attribute") do |list, name| %>
-  === <%= name %> <small><a href="#" class="summary_toggle">collapse</a></small> ===
-  <ul class="summary">
-    <% list.each do |meth| %>
-      <%= yieldall :item => meth %>
-    <% end %>
-  </ul>
-<% end %>
+<% groups(attr_listing, "Attribute") do |list, name| %>=== <%= name %> ===
+
+<% list.each do |meth| %><%= yieldall :item => meth %><% end
+end %>

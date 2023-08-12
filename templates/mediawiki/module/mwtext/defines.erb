@@ -1,3 +1,1 @@
-<%= object.file ? object.file : '(unknown)' %><% if object.files.size > 1 %><span class="defines">,<br />
-  <%= object.files[1..-1].map {|f| f.first }.join(",<br /> ") %></span>
-<% end %>
+<%= object.file ? object.file : '(unknown)' %><% if object.files.size > 1 %>, <%= object.files[1..-1].map {|f| mw_linkify(f.first) }.join(", ") %><% end %>

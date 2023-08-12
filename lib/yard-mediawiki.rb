@@ -1,6 +1,7 @@
 require 'yard'
 require_relative "yard-mediawiki/command_line_options"
 require_relative "yard-mediawiki/yard_mediawiki_api"
+require_relative "yard-mediawiki/Helpers/mw_helper"
 
 YARD::CLI::YardoptsCommand.prepend YardMediawiki::CommandLineOptions
 
@@ -20,10 +21,11 @@ module YardMediawiki
     # YARD::Tags::Library.visible_tags |= tags
   end
 
-  # @return [String] the path to the tempaltes folder
+  # @return [String] the path to the templates folder
   def self.templates_path
     File.join(__dir__, "..", "templates")
   end
+
 end
 
 YardMediawiki.init
