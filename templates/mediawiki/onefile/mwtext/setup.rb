@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-include T('mediawiki/layout/mwtext')
+include T('defalt/layout/html')
 include YARD::Parser::Ruby::Legacy
 
 def init

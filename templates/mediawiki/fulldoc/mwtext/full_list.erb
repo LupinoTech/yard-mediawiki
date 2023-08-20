@@ -1,0 +1,6 @@
+{{yardoc-nav
+|title=<%= @list_title %>
+|<% menu_lists.each do |list| %>
+[[<%= YardMediawiki::YardMediawikiAPI.default_ns %>:<%= @list_title %>/<%= list[:title] %>|<%= list[:title] %>]]
+<% end %>
+}}

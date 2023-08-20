@@ -5,3 +5,4 @@ vendor/
 test.rb
 config.rb
 .yardoc
+templates/default

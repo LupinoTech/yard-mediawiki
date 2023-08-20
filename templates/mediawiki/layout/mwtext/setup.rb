@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 include Helpers::HtmlHelper
+include Helpers::MWHelper
 
 def init
   @breadcrumb = []

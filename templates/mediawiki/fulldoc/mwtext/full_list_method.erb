@@ -1,0 +1,1 @@
+<% @items.each do |item| %>[[<%= linkify item, h(item.name(true)) %>|<%= item.namespace.title %> <%= item.has_tag?(:deprecated) ? '(deprecated)' : '' %>]]<% end %>

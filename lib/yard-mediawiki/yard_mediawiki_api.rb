@@ -2,6 +2,8 @@ module YardMediawiki
   class YardMediawikiAPI
     @default_ns = ""
     @use_smw = false
+    @template_prefix = "yardoc_"
+    @smw_prefix = "Yardoc "
 
     def self.use_smw
       return @use_smw
@@ -17,6 +19,22 @@ module YardMediawiki
 
     def self.default_ns=(val)
       @default_ns = val
+    end
+
+    def self.template_prefix
+      return @template_prefix
+    end
+
+    def self.template_prefix=(val)
+      @template_prefix = val
+    end
+
+    def self.smw_prefix
+      return @smw_prefix
+    end
+
+    def self.smw_prefix=(val)
+      @smw_prefix = val
     end
 
   end

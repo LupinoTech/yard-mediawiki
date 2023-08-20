@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 #include Helpers::HtmlHelper
-#include Helpers::ModuleHelper
+include Helpers::ModuleHelper
+include Helpers::MWHelper
 
 def init
   options.objects = objects = run_verifier(options.objects)
-
   options.serializer.extension="mw"
   return serialize_onefile if options.onefile
-  # generate_assets # Generates the overview lists
+
+  generate_assets # Generates the overview lists
   serialize('_index.mw')
   options.files.each_with_index do |file, _i|
     serialize_file(file, file.title)
@@ -84,141 +85,141 @@ end
 # @param [String] path relative to the document output where the file will be
 #   created.
 # @param [String] content the contents that are saved to the file.
-# def asset(path, content)
-#   path.gsub!(".html", '.mw')
-#   if options.serializer
-#     log.capture("Generating asset #{path}") do
-#       options.serializer.serialize(path, content)
-#     end
-#   end
-# end
+def asset(path, content)
+  path.gsub!(".html", '.mw')
+  if options.serializer
+    log.capture("Generating asset #{path}") do
+      options.serializer.serialize(path, content)
+    end
+  end
+end
 
-# def menu_lists
-#   Object.new.extend(T('layout')).menu_lists
-# end
+def menu_lists
+  Object.new.extend(T('layout')).menu_lists
+end
 
 # Generates all the javascript files, stylesheet files, menu lists
 # (i.e. class, method, and file) based on the the values returned from the
 # layout's menu_list method, and the frameset in the documentation output
 #
-# def generate_assets
-#   @object = Registry.root
+def generate_assets
+  @object = Registry.root
 
-#   layout = Object.new.extend(T('layout'))
-#   layout.menu_lists.each do |list|
-#     list_generator_method = "generate_#{list[:type]}_list"
-#     if respond_to?(list_generator_method)
-#       send(list_generator_method)
-#     else
-#       log.error "Unable to generate '#{list[:title]}' list because no method " \
-#                 "'#{list_generator_method}' exists"
-#     end
-#   end
+  layout = Object.new.extend(T('layout'))
+  layout.menu_lists.each do |list|
+    list_generator_method = "generate_#{list[:type]}_list"
+    if respond_to?(list_generator_method)
+      send(list_generator_method)
+    else
+      log.error "Unable to generate '#{list[:title]}' list because no method " \
+                "'#{list_generator_method}' exists"
+    end
+  end
 
-#   generate_frameset
-# end
+  generate_frameset
+end
 
 # Generate a searchable method list in the output
 # @see ModuleHelper#prune_method_listing
-# def generate_method_list
-#   @items = prune_method_listing(Registry.all(:method), false)
-#   @items = @items.reject {|m| m.name.to_s =~ /=$/ && m.is_attribute? }
-#   @items = @items.sort_by {|m| m.name.to_s }
-#   @list_title = "Method List"
-#   @list_type = "method"
-#   generate_list_contents
-# end
+def generate_method_list
+  @items = prune_method_listing(Registry.all(:method), false)
+  @items = @items.reject {|m| m.name.to_s =~ /=$/ && m.is_attribute? }
+  @items = @items.sort_by {|m| m.name.to_s }
+  @list_title = "Method List"
+  @list_type = "method"
+  generate_list_contents
+end
 
 # Generate a searchable class list in the output
-# def generate_class_list
-#   @items = options.objects if options.objects
-#   @list_title = "Class List"
-#   @list_type = "class"
-#   generate_list_contents
-# end
+def generate_class_list
+  @items = options.objects if options.objects
+  @list_title = "Class List"
+  @list_type = "class"
+  generate_list_contents
+end
 
 # Generate a searchable file list in the output
-# def generate_file_list
-#   @file_list = true
-#   @items = options.files
-#   @list_title = "File List"
-#   @list_type = "file"
-#   generate_list_contents
-#   @file_list = nil
-# end
+def generate_file_list
+  @file_list = true
+  @items = options.files
+  @list_title = "File List"
+  @list_type = "file"
+  generate_list_contents
+  @file_list = nil
+end
 
-# def generate_list_contents
-#   asset(url_for_list(@list_type), erb(:full_list))
-# end
+def generate_list_contents
+  asset(url_for_list(@list_type), erb(:full_list))
+end
 
 # Generate the frame documentation in the output
-# def generate_frameset
-#   asset(url_for_frameset, erb(:frames))
-# end
+def generate_frameset
+  asset(url_for_frameset, erb(:frames))
+end
 
 # @api private
-# class TreeContext
-#   def initialize
-#     @depth = 0
-#     @even_odd = Alternator.new(:even, :odd)
-#   end
+class TreeContext
+  def initialize
+    @depth = 0
+    @even_odd = Alternator.new(:even, :odd)
+  end
 
-#   def nest
-#     @depth += 1
-#     yield
-#     @depth -= 1
-#   end
+  def nest
+    @depth += 1
+    yield
+    @depth -= 1
+  end
 
-#   # @return [String] Returns a css pixel offset, e.g. "30px"
-#   def indent
-#     "#{(@depth + 2) * 15}px"
-#   end
+  # @return [String] Returns a css pixel offset, e.g. "30px"
+  def indent
+    "#{(@depth + 2) * 15}px"
+  end
 
-#   def classes
-#     classes = []
-#     classes << 'collapsed' if @depth > 0
-#     classes << @even_odd.next if @depth < 2
-#     classes
-#   end
+  def classes
+    classes = []
+    classes << 'collapsed' if @depth > 0
+    classes << @even_odd.next if @depth < 2
+    classes
+  end
 
-#   class Alternator
-#     def initialize(first, second)
-#       @next = first
-#       @after = second
-#     end
+  class Alternator
+    def initialize(first, second)
+      @next = first
+      @after = second
+    end
 
-#     def next
-#       @next, @after = @after, @next
-#       @after
-#     end
-#   end
-# end
+    def next
+      @next, @after = @after, @next
+      @after
+    end
+  end
+end
 
-# # @return [String] HTML output of the classes to be displayed in the
-# #    full_list_class template.
-# def class_list(root = Registry.root, tree = TreeContext.new)
-#   out = String.new("")
-#   children = run_verifier(root.children)
-#   if root == Registry.root
-#     children += @items.select {|o| o.namespace.is_a?(CodeObjects::Proxy) }
-#   end
-#   children.compact.sort_by(&:path).each do |child|
-#     next unless child.is_a?(CodeObjects::NamespaceObject)
-#     name = child.namespace.is_a?(CodeObjects::Proxy) ? child.path : child.name
-#     has_children = run_verifier(child.children).any? {|o| o.is_a?(CodeObjects::NamespaceObject) }
-#     out << "<li id='object_#{child.path}' class='#{tree.classes.join(' ')}'>"
-#     out << "<div class='item' style='padding-left:#{tree.indent}'>"
-#     out << "<a class='toggle'></a> " if has_children
-#     out << linkify(child, name)
-#     out << " &lt; #{child.superclass.name}" if child.is_a?(CodeObjects::ClassObject) && child.superclass
-#     out << "<small class='search_info'>"
-#     out << child.namespace.title
-#     out << "</small>"
-#     out << "</div>"
-#     tree.nest do
-#       out << "<ul>#{class_list(child, tree)}</ul>" if has_children
-#     end
-#     out << "</li>"
-#   end
-#   out
-# end
+# @return [String] HTML output of the classes to be displayed in the
+#    full_list_class template.
+def class_list(root = Registry.root, tree = TreeContext.new)
+  out = String.new("")
+  children = run_verifier(root.children)
+  if root == Registry.root
+    children += @items.select {|o| o.namespace.is_a?(CodeObjects::Proxy) }
+  end
+  children.compact.sort_by(&:path).each do |child|
+    next unless child.is_a?(CodeObjects::NamespaceObject)
+    name = child.namespace.is_a?(CodeObjects::Proxy) ? child.path : child.name
+    has_children = run_verifier(child.children).any? {|o| o.is_a?(CodeObjects::NamespaceObject) }
+    out << "<li id='object_#{child.path}' class='#{tree.classes.join(' ')}'>"
+    out << "<div class='item' style='padding-left:#{tree.indent}'>"
+    out << "<a class='toggle'></a> " if has_children
+    out << mw_linkify(child, name)
+    out << " &lt; #{child.superclass.name}" if child.is_a?(CodeObjects::ClassObject) && child.superclass
+    out << "<small class='search_info'>"
+    out << child.namespace.title
+    out << "</small>"
+    out << "</div>"
+    tree.nest do
+      out << "<ul>#{class_list(child, tree)}</ul>" if has_children
+    end
+    out << "</li>"
+  end
+  out
+end

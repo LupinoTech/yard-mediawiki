@@ -1,1 +1,14 @@
-<%= object.file ? object.file : '(unknown)' %><% if object.files.size > 1 %>, <%= object.files[1..-1].map {|f| mw_linkify(f.first) }.join(", ") %><% end %>
+<%
+defines = object.file ? object.file : '(unknown)'
+if @use_smw
+  %><%= mw_semantic_property("is defined in", "#{defines}") %><%
+  if object.files.size > 1
+    object.files[1..-1].map {|x| %><%= mw_semantic_property("is defined in", x.first) %><%}
+  end
+else
+  if object.files.size > 1
+    defines += "|"
+    defines += object.files[1..-1].collect(&:first).join(", ")
+  end
+  %><%= mw_template("defined_in", "#{defines}") %><%
+end %>
