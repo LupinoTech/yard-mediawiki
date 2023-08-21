@@ -86,7 +86,7 @@ end
 #   created.
 # @param [String] content the contents that are saved to the file.
 def asset(path, content)
-  path.gsub!(".html", '.mw')
+  path.gsub!(".html", '.template')
   if options.serializer
     log.capture("Generating asset #{path}") do
       options.serializer.serialize(path, content)
@@ -98,10 +98,9 @@ def menu_lists
   Object.new.extend(T('layout')).menu_lists
 end
 
-# Generates all the javascript files, stylesheet files, menu lists
-# (i.e. class, method, and file) based on the the values returned from the
-# layout's menu_list method, and the frameset in the documentation output
-#
+# Generates the navigation templates (i.e. class, method, and file)
+#   based on the the values returned from the layout's menu_list
+#   method.
 def generate_assets
   @object = Registry.root
 
@@ -115,46 +114,57 @@ def generate_assets
                 "'#{list_generator_method}' exists"
     end
   end
-
-  generate_frameset
 end
 
 # Generate a searchable method list in the output
 # @see ModuleHelper#prune_method_listing
 def generate_method_list
   @items = prune_method_listing(Registry.all(:method), false)
-  @items = @items.reject {|m| m.name.to_s =~ /=$/ && m.is_attribute? }
-  @items = @items.sort_by {|m| m.name.to_s }
-  @list_title = "Method List"
-  @list_type = "method"
-  generate_list_contents
+  if @items.length < 1
+    log.debug("No Method list generated.")
+    YardMediawiki::YardMediawikiAPI::has_methods = false
+    return
+  else
+    @items = @items.reject {|m| m.name.to_s =~ /=$/ && m.is_attribute? }
+    @items = @items.sort_by {|m| m.name.to_s }
+    @list_title = "Method List"
+    @list_type = "method"
+    generate_list_contents
+  end
 end
 
 # Generate a searchable class list in the output
 def generate_class_list
   @items = options.objects if options.objects
-  @list_title = "Class List"
-  @list_type = "class"
-  generate_list_contents
+  if @items.length < 1
+    log.debug("No Class list generated.")
+    YardMediawiki::YardMediawikiAPI::has_classes = false
+    return
+  else
+    @list_title = "Class List"
+    @list_type = "class"
+    generate_list_contents
+  end
 end
 
 # Generate a searchable file list in the output
 def generate_file_list
   @file_list = true
   @items = options.files
-  @list_title = "File List"
-  @list_type = "file"
-  generate_list_contents
-  @file_list = nil
+  if @items.length < 1
+    log.debug("No File list generated.")
+    YardMediawiki::YardMediawikiAPI::has_files=false
+    return
+  else
+    @list_title = "File List"
+    @list_type = "file"
+    generate_list_contents
+    @file_list = nil
+  end
 end
 
 def generate_list_contents
   asset(url_for_list(@list_type), erb(:full_list))
-end
-
-# Generate the frame documentation in the output
-def generate_frameset
-  asset(url_for_frameset, erb(:frames))
 end
 
 # @api private
@@ -197,7 +207,7 @@ end
 
 # @return [String] HTML output of the classes to be displayed in the
 #    full_list_class template.
-def class_list(root = Registry.root, tree = TreeContext.new)
+def class_list(root = Registry.root, tree = TreeContext.new, depth = 1)
   out = String.new("")
   children = run_verifier(root.children)
   if root == Registry.root
@@ -207,19 +217,17 @@ def class_list(root = Registry.root, tree = TreeContext.new)
     next unless child.is_a?(CodeObjects::NamespaceObject)
     name = child.namespace.is_a?(CodeObjects::Proxy) ? child.path : child.name
     has_children = run_verifier(child.children).any? {|o| o.is_a?(CodeObjects::NamespaceObject) }
-    out << "<li id='object_#{child.path}' class='#{tree.classes.join(' ')}'>"
-    out << "<div class='item' style='padding-left:#{tree.indent}'>"
-    out << "<a class='toggle'></a> " if has_children
+    out << "\n#{'*' * depth} <div id='object_#{child.path}'"
+    out << " class='mw-collapsible" if has_children
+    out << ">"
     out << mw_linkify(child, name)
     out << " &lt; #{child.superclass.name}" if child.is_a?(CodeObjects::ClassObject) && child.superclass
-    out << "<small class='search_info'>"
+    out << " <small class='yardoc-search_info'>("
     out << child.namespace.title
-    out << "</small>"
-    out << "</div>"
+    out << ")</small>"
     tree.nest do
-      out << "<ul>#{class_list(child, tree)}</ul>" if has_children
+      out << "\n  <div class=\"mw-collapsible-content\">#{class_list(child, tree, depth+1)}</div>" if has_children
     end
-    out << "</li>"
   end
   out
 end

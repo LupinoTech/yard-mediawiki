@@ -74,7 +74,7 @@ module YARD
           # object. If we are, create a title in the format of
           # "CurrentClass.method_name"
           if obj.is_a?(CodeObjects::MethodObject) && obj.scope == :class && obj.parent == object
-            title = h([object.name, obj.sep, obj.name].join)+"x"
+            title = h([object.name, obj.sep, obj.name].join)
           elsif obj.title != obj.path
             title = h(obj.title)
           else
@@ -114,8 +114,11 @@ module YARD
                else
                  args[0].name.to_s
                end
+        orig_path = path
+        path = path.gsub("/", "#")
+        path = path.gsub("::", "/")
         path = "#{YardMediawiki::YardMediawikiAPI::default_ns}:#{path}"
-        return "[[#{path}|#{args[1]}]]"
+        return "[[#{path}|#{orig_path}]]"
       end
 
       def mw_semantic_property(prop, value)
