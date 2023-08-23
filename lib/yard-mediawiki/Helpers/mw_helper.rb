@@ -16,8 +16,7 @@ module YARD
         if args.first.is_a?(String)
           case args.first
           when %r{://}, /^mailto:/
-            return "url #{args}"
-            link_url(args[0], args[1], {:target => '_parent'}.merge(args[2] || {}))
+            mw_link_url(args[0], args[1], {:target => '_parent'}.merge(args[2] || {}))
           when /^include:file:(\S+)/
             return "include file #{args}"
             file = $1
@@ -86,14 +85,58 @@ module YARD
         return title unless serializer
         return title if obj.is_a?(CodeObjects::Proxy)
 
-        link = url_for(obj, anchor, relative)
-        link = link ? link_url(link, title, :title => h("#{obj.title} (#{obj.type})")) : title
+        link = mw_url_for(obj, anchor, relative)
+        link = link ? mw_link_url(link, title, :title => h("#{obj.title} (#{obj.type})")) : title
         "<span class='object_link'>" + link + "</span>"
       rescue Parser::UndocumentableError
         log.warn "The namespace of link #{obj.inspect} is a constant or invalid."
         title || obj.to_s
       end
 
+      def mw_link_url(url, title = nil, params = {})
+        title ||= url
+        if url == "top-level-namespace.mw"
+          path = "#{YardMediawiki::YardMediawikiAPI::default_ns}:#{@options.title}"
+          return "[[#{path}|#{title}]]"
+        end
+        title = title.gsub(/[\r\n]/, ' ')
+        params = SymbolHash.new(false).update(
+          :href => url,
+          :title => h(title)
+        ).update(params)
+        params[:target] ||= '_parent' if url =~ %r{^(\w+)://}
+        "[#{params[:href]} #{params[:title]}]".gsub(/[\r\n]/, ' ')
+      end
+
+      def mw_url_for(obj, anchor = nil, relative = true)
+        link = nil
+        return link unless serializer
+        return link if obj.is_a?(CodeObjects::Base) && run_verifier([obj]).empty?
+
+        if obj.is_a?(CodeObjects::Base) && !obj.is_a?(CodeObjects::NamespaceObject)
+          # If the obj is not a namespace obj make it the anchor.
+          anchor = obj
+          obj = obj.namespace
+        end
+
+        objpath = serializer.serialized_path(obj)
+        return link unless objpath
+
+        relative = false if object == Registry.root
+        if relative
+          fromobj = object
+          if object.is_a?(CodeObjects::Base) &&
+             !object.is_a?(CodeObjects::NamespaceObject)
+            fromobj = owner
+          end
+
+          from = serializer.serialized_path(fromobj)
+          link = File.relative_path(from, objpath)
+        else
+          link = objpath
+        end
+        link + (anchor ? '#' + urlencode(anchor_for(anchor)) : '')
+      end
 
       # def mw_link_object(obj, title = nil)
       #   return title if title
@@ -107,18 +150,16 @@ module YARD
       #   end
       # end
 
-
       def mw_link_generic(*args)
         path = if args[0].parent && !args[0].parent.root?
                  [args[0].parent.path, args[0].name.to_s].join("/")
                else
                  args[0].name.to_s
                end
-        orig_path = path
-        path = path.gsub("/", "#")
+        path = path.gsub("/", "#") if args[0].is_a?(CodeObjects::MethodObject)
         path = path.gsub("::", "/")
-        path = "#{YardMediawiki::YardMediawikiAPI::default_ns}:#{path}"
-        return "[[#{path}|#{orig_path}]]"
+        path = "#{YardMediawiki::YardMediawikiAPI::default_ns}:#{@options.title}/#{path}"
+        return "[[#{path}|#{args[0].name.to_s}]]"
       end
 
       def mw_semantic_property(prop, value)

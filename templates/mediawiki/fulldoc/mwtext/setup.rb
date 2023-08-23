@@ -217,14 +217,11 @@ def class_list(root = Registry.root, tree = TreeContext.new, depth = 1)
     next unless child.is_a?(CodeObjects::NamespaceObject)
     name = child.namespace.is_a?(CodeObjects::Proxy) ? child.path : child.name
     has_children = run_verifier(child.children).any? {|o| o.is_a?(CodeObjects::NamespaceObject) }
-    out << "\n#{'*' * depth} <div id='object_#{child.path}'"
-    out << " class='mw-collapsible" if has_children
+    out << "\n#{'*' * depth} <div id=\"object_#{child.path}\""
+    out << " class=\"mw-collapsible\"" if has_children
     out << ">"
     out << mw_linkify(child, name)
     out << " &lt; #{child.superclass.name}" if child.is_a?(CodeObjects::ClassObject) && child.superclass
-    out << " <small class='yardoc-search_info'>("
-    out << child.namespace.title
-    out << ")</small>"
     tree.nest do
       out << "\n  <div class=\"mw-collapsible-content\">#{class_list(child, tree, depth+1)}</div>" if has_children
     end
